@@ -1,4 +1,120 @@
-# DDT_Lab 使用教程
+# Tita Stair CENet Play
+
+本仓库当前重点演示 `DDT-Velocity-Stair-Tita-CENet-Play-v0` 任务。该任务用于在 Isaac Lab 中加载已经训练好的 Tita 楼梯 CENet 策略，并在楼梯地形中进行推理测试。
+
+![Tita stair locomotion demo](source/ddt_lab/docs/stair.gif)
+
+## 任务说明
+
+`DDT-Velocity-Stair-Tita-CENet-Play-v0` 是 Tita 机器人楼梯环境的 CENet 推理入口。
+
+- `Stair`：楼梯地形，包含连续台阶和结构化复杂地形。
+- `Tita`：当前运行的轮腿机器人模型。
+- `CENet`：使用上下文估计网络辅助策略推理。
+- `Play`：推理/测试配置，不用于训练。
+- `--keyboard`：启用键盘控制速度指令，适合人工测试上下楼梯、转向和通过能力。
+
+## 环境要求
+
+建议使用以下版本：
+
+- Isaac Lab `release/2.3.0`
+- Isaac Sim `5.1`
+- Python `3.11`
+- RSL-RL
+
+进入仓库根目录后，先安装本项目：
+
+```bash
+python -m pip install -e source/ddt_lab
+```
+
+如果 Isaac Lab 没有安装在当前 Python 环境中，请使用 Isaac Lab 启动器运行脚本，例如：
+
+```bash
+/path/to/IsaacLab/isaaclab.sh -p scripts/rsl_rl/play.py --help
+```
+
+## 键盘控制推理
+
+在仓库根目录执行：
+
+```bash
+python scripts/rsl_rl/play.py \
+  --task DDT-Velocity-Stair-Tita-CENet-Play-v0 \
+  --num_envs 1 \
+  --checkpoint logs/rsl_rl/tita_stair_cenet_adaboot/2026-05-29_15-16-56/model_39999.pt \
+  --keyboard
+```
+
+参数说明：
+
+- `--task`：指定运行的 Isaac Lab 任务。
+- `--num_envs 1`：键盘控制时只运行一个环境。
+- `--checkpoint`：加载已经训练好的 CENet 策略权重。
+- `--keyboard`：打开键盘控制模式，用键盘输入速度指令。
+
+注意：`--keyboard` 需要 Isaac Sim 图形窗口，不能和 `--headless` 一起使用。
+
+## 自动推理
+
+如果只想加载策略自动运行，可以去掉 `--keyboard`：
+
+```bash
+python scripts/rsl_rl/play.py \
+  --task DDT-Velocity-Stair-Tita-CENet-Play-v0 \
+  --num_envs 50 \
+  --checkpoint logs/rsl_rl/tita_stair_cenet_adaboot/2026-05-29_15-16-56/model_39999.pt
+```
+
+## 服务器录制视频
+
+服务器或无显示环境下可以使用 `--headless --video` 录制推理视频。该模式不能使用 `--keyboard`。
+
+```bash
+python scripts/rsl_rl/play.py \
+  --task DDT-Velocity-Stair-Tita-CENet-Play-v0 \
+  --num_envs 50 \
+  --checkpoint logs/rsl_rl/tita_stair_cenet_adaboot/2026-05-29_15-16-56/model_39999.pt \
+  --headless \
+  --video
+```
+
+视频会保存到 checkpoint 所在 run 目录下的 `videos/play` 子目录。
+
+## 策略导出
+
+运行 `play.py` 时，脚本会在加载 checkpoint 后自动导出部署文件：
+
+```text
+logs/rsl_rl/tita_stair_cenet_adaboot/2026-05-29_15-16-56/exported/
+```
+
+常见导出文件包括：
+
+- `policy.pt`
+- `policy.onnx`
+- `policy_metadata.json`
+
+这些文件可用于后续部署或 sim2sim/sim2real 流程。
+
+## 常见问题
+
+如果提示找不到任务，请确认已经安装本项目：
+
+```bash
+python -m pip install -e source/ddt_lab
+```
+
+如果提示找不到 checkpoint，请确认权重文件存在：
+
+```bash
+ls logs/rsl_rl/tita_stair_cenet_adaboot/2026-05-29_15-16-56/model_39999.pt
+```
+
+如果 `--keyboard` 无法使用，请确认当前不是 headless 模式，并且 Isaac Sim 图形窗口已经正常打开。
+
+<!-- # DDT_Lab 使用教程
 
 ## Overview
 
@@ -305,4 +421,5 @@ Some examples of packages that can likely be excluded are:
 "<path-to-isaac-sim>/extscache/omni.graph.*"        // Graph UI tools
 "<path-to-isaac-sim>/extscache/omni.services.*"     // Services tools
 ...
-```
+``` -->
+
